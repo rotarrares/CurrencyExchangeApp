@@ -78,9 +78,9 @@ const useStyles = makeStyles((theme) => ({
 const CurrencyCard = ({currency,baseCurrency,setBaseCurrency,getRates,selectedCurrency,selectCurrency,}) => {
     const classes = useStyles();
     const theme = useTheme();
-    const [value, setValue] = useState(props.currency.value|" ");
+    const [value, setValue] = useState( currency.value|" ");
     const [error, setError] = useState(false);
-    const isBase = props.currency.symbol === props.baseCurrency.symbol;
+    const isBase = currency.symbol === baseCurrency.symbol;
 
     /**
      * Selects the whole input field
@@ -94,16 +94,16 @@ const CurrencyCard = ({currency,baseCurrency,setBaseCurrency,getRates,selectedCu
      * Closes the card by removing the currency from the selected list
      * @param e {Event} - Event Handler
      */
-    const handleClose = e => {props.selectCurrency(props.currency)};
+    const handleClose = e => {selectCurrency(currency)};
 
     /**
      *  Updates the base currency to this field and gets new rates when a new base is selected, then Validates and adds new value to the input field.
      * @param e {Event} - Event Handler
      */
     const handleChange = e => {
-        if (!(props.currency.symbol === props.baseCurrency.symbol))
+        if (!(currency.symbol === baseCurrency.symbol))
         {
-            props.getRates(ApiKey,props.currency.symbol,props.selectedCurrency)
+            getRates(ApiKey,currency,selectedCurrency)
         }
         setBaseCurrency(currency.symbol, e.target.value);
         setError(isNaN(e.target.value));
@@ -119,7 +119,7 @@ const CurrencyCard = ({currency,baseCurrency,setBaseCurrency,getRates,selectedCu
 
             setValue((isNaN(baseCurrency.value)?"0":baseCurrency.value * currency.rate))
         }
-        if(isBase && value!= props.baseCurrency) {
+        if(isBase && value!= baseCurrency) {
             setValue(baseCurrency.value)
         }
     },[selectedCurrency, baseCurrency])
@@ -157,7 +157,7 @@ const CurrencyCard = ({currency,baseCurrency,setBaseCurrency,getRates,selectedCu
                         style={{
                             width:'100%',}}
                         inputProps={{inputMode: 'numeric',className: classes.textField}} // the change is here
-                        InputProps={{className:classes.multilineColor,startAdornment: (props.currency.symbol)&&<InputAdornment position="start">{getSymbolFromCurrency(props.currency.symbol)}</InputAdornment>}}
+                        InputProps={{className:classes.multilineColor,startAdornment: (currency.symbol)&&<InputAdornment position="start">{getSymbolFromCurrency(currency.symbol)}</InputAdornment>}}
                         variant="outlined"
                         label={(error)&&"Insert a valid number"}
                         onChange={handleChange}

@@ -2,7 +2,6 @@ import ReactDOM from "react-dom";
 import {Provider} from "react-redux";
 import {store} from "../../app/store";
 import {AppThemeProvider} from "../../app/theme";
-import {createTheme} from "@material-ui/core";
 import {render} from "@testing-library/react";
 import React from "react";
 import CurrencyList from "./CurrencyList";

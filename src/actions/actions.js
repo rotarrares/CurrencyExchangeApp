@@ -1,5 +1,6 @@
 
 import {Api} from "../app/api";
+import {ACTIONS} from "./actionTypes";
 
 /**
  * Action creator of type ITEMS_HAVE_ERROR
@@ -9,7 +10,7 @@ import {Api} from "../app/api";
  */
 export function itemsHaveError(bool) {
     return {
-        type: 'ITEMS_HAVE_ERROR',
+        type: ACTIONS.ITEMS_HAVE_ERROR,
         hasError: bool
     };
 }
@@ -24,7 +25,7 @@ export function itemsHaveError(bool) {
  */
 export function errorMessage(message) {
     return {
-        type: 'ERROR_MESSAGE',
+        type: ACTIONS.ERROR_MESSAGE,
         message
     };
 }
@@ -37,7 +38,7 @@ export function errorMessage(message) {
 
 export const itemsAreLoading = (bool) => {
     return {
-        type: 'ITEMS_ARE_LOADING',
+        type: ACTIONS.ITEMS_LOADING,
         isLoading: bool
     };
 }
@@ -51,7 +52,7 @@ export const itemsAreLoading = (bool) => {
 
 export const currencyFetchDataSuccess = (currency) => {
     return {
-        type: 'CURRENCY_FETCH_DATA_SUCCESS',
+        type: ACTIONS.CURRENCY_FETCH_DATA_SUCCESS,
         currencies:Object.keys(currency).map(key=>({symbol:key, name:currency[key]}))
     };
 }
@@ -65,7 +66,7 @@ export const currencyFetchDataSuccess = (currency) => {
 
 export const selectCurrency = (selectedCurrency) => {
     return{
-        type: "CURRENCY_SELECTED",
+        type: ACTIONS.CURRENCY_SELECTED,
         selectedCurrency
     }
 }
@@ -78,7 +79,7 @@ export const selectCurrency = (selectedCurrency) => {
  */
 
 export const setBaseCurrency = (baseCurrency) => ({
-    type:"SET_BASE_CURRENCY",
+    type:ACTIONS.SET_BASE_CURRENCY,
     baseCurrency,
 })
 
@@ -91,7 +92,7 @@ export const setBaseCurrency = (baseCurrency) => ({
  * @returns {{rates: *, type: string}}
  */
 export const ratesFetchDataSuccess = (rates) => ({
-    type: "GET_RATES",
+    type: ACTIONS.GET_RATES,
     rates
 });
 

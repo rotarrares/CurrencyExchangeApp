@@ -4,6 +4,8 @@
  * @param action {{type:string,hasError: boolean}}
  * @returns {boolean|*}
  */
+import {ACTIONS} from "../actions/actionTypes";
+
 export const itemsHaveError = (state = false, action) => {
     switch (action.type) {
         case 'ITEMS_HAVE_ERROR':
@@ -22,7 +24,7 @@ export const itemsHaveError = (state = false, action) => {
  */
 export const errorMessage = (state = "", action) => {
     switch (action.type) {
-        case 'ERROR_MESSAGE':
+        case ACTIONS.ERROR_MESSAGE:
             return action.message;
 
         default:
@@ -38,7 +40,7 @@ export const errorMessage = (state = "", action) => {
  */
 export const itemsAreLoading = (state = false, action) => {
     switch (action.type) {
-        case 'ITEMS_ARE_LOADING':
+        case ACTIONS.ITEMS_LOADING:
             return action.isLoading;
 
         default:
