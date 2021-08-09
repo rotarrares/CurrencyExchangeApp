@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: components/currency/CurrencyCard.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: components/currency/CurrencyCard.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import PropTypes from "prop-types";
+import Card from "@material-ui/core/Card";
+import React, {useEffect, useState} from "react";
+import {CardContent, CardHeader, CardMedia, IconButton, Typography} from "@material-ui/core";
+import TextField from "@material-ui/core/TextField";
+import InputAdornment from "@material-ui/core/InputAdornment";
+import {Close} from "@material-ui/icons";
+import {makeStyles, useTheme} from "@material-ui/styles";
+import {connect} from "react-redux";
+import {getExchangeRatesForSelected, selectCurrency, setBaseCurrency} from "../../actions/actions";
+import getSymbolFromCurrency from "currency-symbol-map";
+import CurrencyFlag from 'react-currency-flags';
+import {ApiKey} from "../../app/api";
+
+/**
+ * Styles applied to the Currency Card
+ * @type {(props?: any) => ClassNameMap&lt;"flag"|"form"|"currencyName"|"root"|"actions"|"multilineColor"|"textField">}
+ */
+const useStyles = makeStyles((theme) => ({
+    root: {
+        background:theme.palette.background.paper,
+        [theme.breakpoints.up('sm')]:{
+            minHeight: 208
+        },
+        [theme.breakpoints.between('md','lg')]:{
+            minHeight: 188
+        },
+    },
+    actions: {
+        display: 'flex',
+        flexDirection: 'column',
+    },
+    form: {
+        width: '100%',
+    },
+    flag: {
+        width: 80,
+    },
+    multilineColor:{
+        background:theme.palette.background.paper,
+        marginBottom:16,
+    },
+    currencyName: {
+        minHeight : '46px',
+    },
+    textField: {
+        background:theme.palette.background.paper ,
+        textAlign: 'right'
+    }
+}));
+
+/**
+ * A Currency Object
+ * @typedef {Object} Currency
+ * @property {string} symbol - Symbol of the currency
+ * @property {string} name - Full name of the currency
+ * @property {number} rate - Currency Exchange Rate (optional)
+ */
+
+/**
+ * A Base Currency Object
+ * @typedef {Object} BaseCurrency
+ * @property {string} symbol - Symbol of the currency
+ * @property {number} value - Currency value of the base currency in the store
+ */
+
+/**
+ *  A card that displays information for the selected currencies. Allows the user to input a value for currency.
+ * @param currency {Currency} - Current currency to be displayed
+ * @param baseCurrency {BaseCurrency} - Base currency of the store
+ * @param setBaseCurrency {function} - Sets the baseCurrency in the store
+ * @param getRates {function} - Retrieves the exchange rates from the API
+ * @param selectedCurrency {Currency[]} - List of currencies selected
+ * @param selectCurrency - {function} - Adds or removes a new currency selected from the list
+ * @returns {JSX.Element}
+ * @constructor
+ */
+const CurrencyCard = ({currency,baseCurrency,setBaseCurrency,getRates,selectedCurrency,selectCurrency,}) => {
+    const classes = useStyles();
+    const theme = useTheme();
+    const [value, setValue] = useState(props.currency.value|" ");
+    const [error, setError] = useState(false);
+    const isBase = props.currency.symbol === props.baseCurrency.symbol;
+
+    /**
+     * Selects the whole input field
+     * @param e {Event} - Event handler
+     */
+    const handleClick = (e) => {
+        (e.target.localName === "input")&amp;&amp;e.target.select()
+    }
+
+    /**
+     * Closes the card by removing the currency from the selected list
+     * @param e {Event} - Event Handler
+     */
+    const handleClose = e => {props.selectCurrency(props.currency)};
+
+    /**
+     *  Updates the base currency to this field and gets new rates when a new base is selected, then Validates and adds new value to the input field.
+     * @param e {Event} - Event Handler
+     */
+    const handleChange = e => {
+        if (!(props.currency.symbol === props.baseCurrency.symbol))
+        {
+            props.getRates(ApiKey,props.currency.symbol,props.selectedCurrency)
+        }
+        setBaseCurrency(currency.symbol, e.target.value);
+        setError(isNaN(e.target.value));
+        setValue(e.target.value);
+    }
+
+    /**
+     * On state change of base currency or selected currency, if element does not belong to base currency calculate the field value
+     * If element belongs to base currency then set the value as the value of the base field.
+     */
+    useEffect(() => {
+        if(!isBase &amp;&amp; baseCurrency != undefined &amp;&amp; currency.rate !=undefined){
+
+            setValue((isNaN(baseCurrency.value)?"0":baseCurrency.value * currency.rate))
+        }
+        if(isBase &amp;&amp; value!= props.baseCurrency) {
+            setValue(baseCurrency.value)
+        }
+    },[selectedCurrency, baseCurrency])
+
+
+    return(
+
+        &lt;Card className={classes.root}
+              raised={isBase}
+              style={{
+                  background:(isBase)&amp;&amp;theme.palette.background.default,
+              }}
+        >
+            &lt;CardHeader
+                avatar={
+                    &lt;CurrencyFlag
+                        className={classes.flag}
+                        currency={currency.symbol}
+                        width={60}/>
+                }
+                action={
+                    &lt;IconButton size={"small"} onClick={handleClose} color={"secondary"} aria-label={"Close"}>
+                        &lt;Close/>
+                    &lt;/IconButton>
+                }
+                title={currency.symbol + " - " + currency.name}
+                subheader={ (currency.rate!=undefined)&amp;&amp;"1 " + baseCurrency.symbol + " = " + 1*currency.rate + " " + currency.symbol}
+            >
+                 &lt;/CardHeader>
+
+            &lt;CardContent data-testid={"CardContent"}>
+                &lt;form className={classes.form}>
+                    &lt;TextField
+                        error={error}
+                        style={{
+                            width:'100%',}}
+                        inputProps={{inputMode: 'numeric',className: classes.textField}} // the change is here
+                        InputProps={{className:classes.multilineColor,startAdornment: (props.currency.symbol)&amp;&amp;&lt;InputAdornment position="start">{getSymbolFromCurrency(props.currency.symbol)}&lt;/InputAdornment>}}
+                        variant="outlined"
+                        label={(error)&amp;&amp;"Insert a valid number"}
+                        onChange={handleChange}
+                        onClick={handleClick}
+                        value={value}
+                        InputLabelProps={{
+                            shrink: true,
+                        }}
+                        size={"small"}
+                    />
+                &lt;/form>
+            &lt;/CardContent>
+        &lt;/Card>
+    )
+}
+
+/**
+ * Validation of Currency Card
+ * @type {{selectCurrency: Validator&lt;NonNullable&lt;(...args: any[]) => any>>, selectedCurrency: Validator&lt;NonNullable&lt;any[]>>, currency: Validator&lt;NonNullable&lt;object>>, setBaseCurrency: Validator&lt;NonNullable&lt;(...args: any[]) => any>>, getRates: Validator&lt;NonNullable&lt;(...args: any[]) => any>>, baseCurrency: Validator&lt;NonNullable&lt;object>>}}
+ */
+CurrencyCard.propTypes = {
+    currency:PropTypes.object.isRequired,
+    baseCurrency: PropTypes.object.isRequired,
+    setBaseCurrency: PropTypes.func.isRequired,
+    getRates:PropTypes.func.isRequired,
+    selectedCurrency:PropTypes.array.isRequired,
+    selectCurrency: PropTypes.func.isRequired,
+};
+
+/**
+ * Maps store state to the Currency Card props
+ * @param state
+ * @returns {{selectedCurrency: Validator&lt;NonNullable&lt;any[]>> | (function(*=, *): (*[]|{rate: *}[])), baseCurrency: Validator&lt;NonNullable&lt;Object>> | (function(*=, *): ({}|Validator&lt;NonNullable&lt;Object>>|(function(*=, *): *)))}}
+ */
+const mapStateToProps = (state) => {
+    return {
+        selectedCurrency: state.selectedCurrency,
+        baseCurrency: state.baseCurrency,
+    };
+};
+
+/**
+ * Maps dispatch functions to the Currency Card Props
+ * @param dispatch
+ * @returns {{selectCurrency: (function(*=): *), getRates: (function(*=, *=, *=): *), setBaseCurrency: (function(*, *): *)}}
+ */
+const mapDispatchToProps = (dispatch) => {
+    return {
+        getRates : (api,base,selected) => dispatch(getExchangeRatesForSelected(api,base,selected)),
+        setBaseCurrency : (symbol, value) => dispatch(setBaseCurrency({symbol,value})),
+        selectCurrency : (currencySelected) => dispatch(selectCurrency(currencySelected)),
+    };
+};
+
+export default connect(mapStateToProps,mapDispatchToProps)(CurrencyCard)
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="App.html">App</a></li><li><a href="CurrencyCard.html">CurrencyCard</a></li><li><a href="CurrencyGrid.html">CurrencyGrid</a></li><li><a href="CurrencyList.html">CurrencyList</a></li><li><a href="CurrencyModal.html">CurrencyModal</a></li><li><a href="Header.html">Header</a></li></ul><h3>Global</h3><ul><li><a href="global.html#Api">Api</a></li><li><a href="global.html#ApiKey">ApiKey</a></li><li><a href="global.html#currencyFetchData">currencyFetchData</a></li><li><a href="global.html#currencyFetchDataSuccess">currencyFetchDataSuccess</a></li><li><a href="global.html#errorMessage">errorMessage</a></li><li><a href="global.html#getExchangeRatesForSelected">getExchangeRatesForSelected</a></li><li><a href="global.html#getRates">getRates</a></li><li><a href="global.html#itemsAreLoading">itemsAreLoading</a></li><li><a href="global.html#itemsHaveError">itemsHaveError</a></li><li><a href="global.html#mapDispatchToProps">mapDispatchToProps</a></li><li><a href="global.html#mapStateToProps">mapStateToProps</a></li><li><a href="global.html#ratesFetchDataSuccess">ratesFetchDataSuccess</a></li><li><a href="global.html#selectCurrency">selectCurrency</a></li><li><a href="global.html#setBaseCurrency">setBaseCurrency</a></li><li><a href="global.html#store">store</a></li><li><a href="global.html#useStyles">useStyles</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.7</a> on Mon Aug 09 2021 05:25:10 GMT+0300 (Eastern European Summer Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

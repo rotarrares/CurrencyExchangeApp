@@ -1,17 +1,20 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
-import { store } from './app/store';
-import { Provider } from 'react-redux';
-import * as serviceWorker from './serviceWorker';
+import App from './app/App';
+import * as serviceWorker from './app/serviceWorker';
+import {Provider} from "react-redux";
+import "@fontsource/roboto";
+import {store} from "./app/store";
+import {AppThemeProvider} from "./app/theme";
+
 
 ReactDOM.render(
-  <React.StrictMode>
     <Provider store={store}>
-      <App />
+        <AppThemeProvider>
+          <App />
+        </AppThemeProvider>
     </Provider>
-  </React.StrictMode>,
+    ,
   document.getElementById('root')
 );
 

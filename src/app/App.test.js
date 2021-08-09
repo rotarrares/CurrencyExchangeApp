@@ -1,15 +1,17 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import { Provider } from 'react-redux';
-import { store } from './app/store';
 import App from './App';
+import {store} from "./store";
+import {AppThemeProvider} from "./theme";
 
-test('renders learn react link', () => {
-  const { getByText } = render(
+test('renders app', () => {
+  render(
     <Provider store={store}>
-      <App />
+        <AppThemeProvider>
+            <App />
+        </AppThemeProvider>
     </Provider>
   );
 
-  expect(getByText(/learn/i)).toBeInTheDocument();
 });

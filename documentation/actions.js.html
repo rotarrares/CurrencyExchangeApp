@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: actions.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: actions.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import axios from 'axios';
+import {Api} from "../app/api";
+
+/**
+ * Action creator of type ITEMS_HAVE_ERROR
+ * Returns an action that sets the itemsHaveError state to the provided boolean value
+ * @param bool
+ * @returns {{hasError: boolean, type: string}}
+ */
+export function itemsHaveError(bool) {
+    return {
+        type: 'ITEMS_HAVE_ERROR',
+        hasError: bool
+    };
+}
+
+
+
+/**
+ * Action creator of type ERROR_MESSAGE
+ * Returns an action that sets the error message of the response in the store
+ * @param message: string
+ * @returns {{message: string, type: string}}
+ */
+export function errorMessage(message) {
+    return {
+        type: 'ERROR_MESSAGE',
+        message
+    };
+}
+/**
+ * Action creator of type ITEMS_ARE_LOADING
+ * Returns an action that sets the itemsAreLoading state to the provided boolean value
+ * @param bool
+ * @returns {{isLoading: *, type: string}}
+ */
+
+export const itemsAreLoading = (bool) => {
+    return {
+        type: 'ITEMS_ARE_LOADING',
+        isLoading: bool
+    };
+}
+
+/**
+ * Action creator of type CURRENCY_FETCH_DATA_SUCCESS
+ * Returns an action that sets the available currency list in the state
+ * @param Available currency list an object where keys are currencySymbols and values are currencyName
+ * @returns {{type: string, currencies: {symbol: *, name: *}[]}}
+ */
+
+export const currencyFetchDataSuccess = (currency) => {
+    return {
+        type: 'CURRENCY_FETCH_DATA_SUCCESS',
+        currencies:Object.keys(currency).map(key=>({symbol:key, name:currency[key]}))
+    };
+}
+
+/**
+ * Action creator of type CURRENCY_SELECTED
+ * Returns an action that adds a selected currency to the list
+ * @param selectedCurrency of type {symbol:string, name:string}
+ * @returns {{selectedCurrency: {symbol:string, name:string}, type: string}}
+ */
+
+export const selectCurrency = (selectedCurrency) => {
+    return{
+        type: "CURRENCY_SELECTED",
+        selectedCurrency
+    }
+}
+
+/**
+ * Action creator of type SET_BASE_CURRENCY
+ * Returns an action that sets the base currency to a new currency
+ * @param baseCurrency of type {symbol:string, value:number}
+ * @returns {{type: string, baseCurrency: *}}
+ */
+
+export const setBaseCurrency = (baseCurrency) => ({
+    type:"SET_BASE_CURRENCY",
+    baseCurrency,
+})
+
+
+/**
+ * Action creator of type GET_RATES
+ * Returns an action that sets the new rates for currencies
+ * @param rates:{*cuurencyName*:*currencyRate*,...}
+ * @returns {{rates:{cuurencyName:currencyRate,...}, type: string}}
+ */
+export const ratesFetchDataSuccess = (rates) => ({
+    type: "GET_RATES",
+    rates
+})
+
+/**
+ * Action creator of type GET_RATE
+ * Returns an action that sets the new rate for currency
+ * @param rates:{*cuurencyName*:*currencyRate*}
+ * @returns {{rates:{cuurencyName:currencyRate}, type: string}}
+ */
+export const rateFetchDataSuccess = (rate) => ({
+    type: "GET_RATE",
+    rate
+})
+
+/**
+ * Dispatcher calls API to get the rates for selected currencies. Will dispatch errors and loading state.
+ * @param url
+ * @returns {function(*): void}
+ */
+export const getExchangeRatesForSelected = (api,baseCurrency,selectedCurrency) => (dispatch) => {
+    dispatch(itemsAreLoading(true));
+    dispatch(itemsHaveError(false));
+    /*setTimeout(()=> {
+        dispatch(itemsAreLoading(false));
+        dispatch(ratesFetchDataSuccess({
+            "AED": 1.566015,
+            "AFN": 1.560132,
+            "ALL": 1.154727,
+            "AMD": 7.827874,
+            "EUR": 1,
+            "JPY": 132.360679,
+            "USD": 1.23396,
+            "BAM": 12,
+        }))
+
+    }, 1000)*/
+    const symbolList = selectedCurrency.map(selected=>selected.symbol).sort().join(",");
+    Api.get(`latest${api}&amp;base=${baseCurrency.symbol}&amp;symbols=${symbolList}`)
+        .then((response) => {
+            if (response.status !== 200) {
+                throw Error(response);
+            }
+            return response;
+        })
+        .then((response) => {
+            dispatch(itemsAreLoading(false));
+            dispatch(ratesFetchDataSuccess(response.data.rates))
+        })
+        .catch((error) =>
+        {
+            dispatch(itemsHaveError(true))
+            if(error.response.status === 400){
+               dispatch(errorMessage("Base Currency Not Supported in subscription plan"))
+            }
+            else {
+                dispatch(errorMessage(error.response.data.error.message))
+            }
+            dispatch(itemsAreLoading(false))
+        });
+}
+
+/**
+ * Dispatcher calls API to get the available currencies. Will dispatch errors and loading state.
+ * @param url
+ * @returns {function(*): void}
+ */
+export const currencyFetchData = (url) => (dispatch) => {
+        dispatch(itemsHaveError(false));
+        dispatch(itemsAreLoading(true));
+
+        /*setTimeout(()=> {
+            dispatch(itemsAreLoading(false));
+            dispatch(currencyFetchDataSuccess({
+                "AED": "United Arab Emirates Dirham",
+                "AFN": "Afghan Afghani",
+                "ALL": "Albanian Lek",
+                "AMD": "Armenian Dram",
+                "ANG": "Netherlands Antillean Guilder",
+                "AOA": "Angolan Kwanza",
+                "ARS":"Argentine Peso",
+                "AUD":"Australian Dollar",
+                "AWG":"Aruban Florin",
+                "AZN":"Azerbaijani Manat",
+                "BAM":"Bosnia-Herzegovina Convertible Mark",
+                "BBD":"Barbadian Dollar",
+                "BDT":"Bangladeshi Taka",
+                "JPY": "Japanese Yen",
+                "USD": "United States Dollar",
+                "EUR": "Eurpoean Euro",
+            }))},4000
+        )
+*/
+        Api.get(url)
+            .then((response) => {
+                if (response.status !== 200) {
+                    throw Error(response);
+                }
+                dispatch(itemsAreLoading(false));
+
+                return response;
+            })
+            .then((response) => dispatch(currencyFetchDataSuccess(response.data.symbols)))
+            .catch((err) => {
+                dispatch(itemsHaveError(true))
+                dispatch(errorMessage(err.response.data.error.message))
+                dispatch(itemsAreLoading(false))
+            });
+    };
+
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#currencyFetchData">currencyFetchData</a></li><li><a href="global.html#currencyFetchDataSuccess">currencyFetchDataSuccess</a></li><li><a href="global.html#errorMessage">errorMessage</a></li><li><a href="global.html#getExchangeRatesForSelected">getExchangeRatesForSelected</a></li><li><a href="global.html#itemsAreLoading">itemsAreLoading</a></li><li><a href="global.html#itemsHaveError">itemsHaveError</a></li><li><a href="global.html#rateFetchDataSuccess">rateFetchDataSuccess</a></li><li><a href="global.html#ratesFetchDataSuccess">ratesFetchDataSuccess</a></li><li><a href="global.html#selectCurrency">selectCurrency</a></li><li><a href="global.html#setBaseCurrency">setBaseCurrency</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.7</a> on Mon Aug 09 2021 04:09:12 GMT+0300 (Eastern European Summer Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
