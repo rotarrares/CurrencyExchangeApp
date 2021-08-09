@@ -126,12 +126,11 @@ export const getExchangeRatesForSelected = (api,baseCurrency,selectedCurrency) =
             if (response.status !== 200) {
                 throw Error(response);
             }
+
             return response;
         })
-        .then((response) => {
-            dispatch(itemsAreLoading(false));
-            dispatch(ratesFetchDataSuccess(response.data.rates))
-        })
+        .then((response) =>
+            dispatch(ratesFetchDataSuccess(response.data.rates)))
         .catch((error) =>
         {
             dispatch(itemsHaveError(true))
@@ -141,6 +140,9 @@ export const getExchangeRatesForSelected = (api,baseCurrency,selectedCurrency) =
             else {
                 dispatch(errorMessage(error.response.data.error.message))
             }
+
+        })
+        .finally(()=>{
             dispatch(itemsAreLoading(false))
         });
 }
@@ -181,8 +183,6 @@ export const currencyFetchData = (url) => (dispatch) => {
                 if (response.status !== 200) {
                     throw Error(response);
                 }
-                dispatch(itemsAreLoading(false));
-
                 return response;
             })
             .then((response) => dispatch(currencyFetchDataSuccess(response.data.symbols)))
@@ -190,6 +190,9 @@ export const currencyFetchData = (url) => (dispatch) => {
                 dispatch(itemsHaveError(true))
                 dispatch(errorMessage(err.response.data.error.message))
                 dispatch(itemsAreLoading(false))
+            })
+            .finally(()=>{
+                dispatch(itemsAreLoading(false));
             });
     };
 

@@ -34,7 +34,7 @@ const useStyles = makeStyles((theme) => ({
         width: '100%',
     },
     flag: {
-        width: 80,
+        width: 60,
     },
     multilineColor:{
         background:theme.palette.background.paper,
