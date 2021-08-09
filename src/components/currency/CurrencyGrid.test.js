@@ -2,17 +2,16 @@ import ReactDOM from "react-dom";
 import {Provider} from "react-redux";
 import {store} from "../../app/store";
 import {AppThemeProvider} from "../../app/theme";
-import {createTheme} from "@material-ui/core";
 import {render} from "@testing-library/react";
 import React from "react";
 import CurrencyGrid from "./CurrencyGrid";
 
-test('renders without crashing', () => {
+test('Currency Grid renders without crashing', () => {
     const div = document.createElement('div')
     ReactDOM.render(
         <Provider store={store}>
             <AppThemeProvider>
-                <CurrencyGrid/>
+                <CurrencyGrid modalOpen={false}/>
             </AppThemeProvider>
         </Provider>
       , div)
@@ -20,11 +19,11 @@ test('renders without crashing', () => {
 
 });
 
-test('renders grid correctly', () => {
+test('CurrencyGrid renders grid correctly', () => {
     const { getByTestId } = render(
         <Provider store={store}>
             <AppThemeProvider>
-                <CurrencyGrid/>
+                <CurrencyGrid modalOpen={false}/>
             </AppThemeProvider>
         </Provider>
     );

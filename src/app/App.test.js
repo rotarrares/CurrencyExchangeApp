@@ -9,7 +9,7 @@ test('renders app', () => {
   render(
     <Provider store={store}>
         <AppThemeProvider>
-            <App />
+            <App/>
         </AppThemeProvider>
     </Provider>
   );

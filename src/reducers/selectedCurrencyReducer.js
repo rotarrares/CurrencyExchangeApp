@@ -1,5 +1,6 @@
 import {itemsHaveError} from "../actions/actions";
 import {ACTIONS} from "../actions/actionTypes";
+import {symbol} from "prop-types";
 
 /**
  * Reducer that adds a selected currency to the selected currency list
@@ -9,15 +10,16 @@ import {ACTIONS} from "../actions/actionTypes";
  */
 export const selectCurrency = (state = [{symbol:"EUR",name:"European Euro",rate:1}], action) => {
     switch (action.type) {
+
         case ACTIONS.CURRENCY_SELECTED:
-            const selectedIndex = state.findIndex((currency)=>currency.symbol===action.selectedCurrency.symbol)
-            if(selectedIndex !== -1)
-                return state.filter((currencies,index) => index !== selectedIndex)
+            if(action.selectedCurrency.index !== undefined)
+                return state.filter((currencies,index) => index !== action.selectedCurrency.index)
             else
-                return [...state, action.selectedCurrency];
+                return [...state, {symbol:action.selectedCurrency.symbol,name: action.selectedCurrency.name, rate:action.selectedCurrency.rate}];
 
         case ACTIONS.GET_RATES:
-            return state.map(selectedCurrency => ({...selectedCurrency, rate: action.rates[selectedCurrency.symbol]}))
+            return state.map(selectedCurrency => ({symbol:selectedCurrency.symbol,name:selectedCurrency.name, rate: action.rates[selectedCurrency.symbol]}))
+
         default:
             return state;
     }

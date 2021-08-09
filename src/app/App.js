@@ -41,6 +41,21 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 /**
+ * Global styles applied on the body
+ * @type {(props?: any) => ClassNameMap<"@global">}
+ */
+const useGlobalStyles = makeStyles((theme)=>({
+    "@global":{
+        body:{
+            border:0,
+            background:theme.palette.background.paper,
+            margin:0,
+            padding:0,
+        },
+    }
+
+}))
+/**
  *
  * @param baseCurrency {object} - Store base currency
  * @param getRates {func} - Store func. to get the rates for the current base currency
@@ -54,12 +69,15 @@ const useStyles = makeStyles((theme) => ({
  */
 const App = ({baseCurrency, getRates, isError, isLoading, selectedCurrency,errorMessage,setIsError}) => {
     const classes = useStyles();
+    useGlobalStyles();
     const [modalOpen, setModalOpen] = useState(false);
+
 
     const toggleModal = (e) => {
         if(modalOpen && Object.keys(baseCurrency).length > 0) {
             getRates(ApiKey,baseCurrency,selectedCurrency)
         }
+
         setModalOpen((prevState => !prevState));
     }
 
@@ -67,11 +85,10 @@ const App = ({baseCurrency, getRates, isError, isLoading, selectedCurrency,error
             setIsError(false);
     }
 
-
     return (
         <Container fixed className={classes.appContainer}>
             <Header/>
-            <CurrencyGrid />
+            <CurrencyGrid modalOpen={modalOpen}/>
             <CurrencyModal toggleModal={toggleModal} modalOpen={modalOpen}/>
 
             {(isLoading)?<div className={classes.floatingButton}><CircularProgress /></div>:

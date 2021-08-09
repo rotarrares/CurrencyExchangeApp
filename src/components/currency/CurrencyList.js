@@ -27,20 +27,31 @@ const CurrencyList = ({selectCurrency,currency,fetchData,selectedCurrency}) => {
      * @param currencySelected - A currency object that was selected by clicking on the List Item
      * @returns {function(*): void}
      */
-    const handleClick = (currencySelected) => (e) =>{
-        selectCurrency(currencySelected);
+    const handleClick = (currencySelected, index) => (e) =>{
+        selectCurrency(currencySelected, index);
     }
 
     useEffect(()=>{
         if(currency.length === 0) fetchData('/symbols' + ApiKey );
     },[])
 
+
+    let selectedMap = {}
+    /**
+     * Organizing the selected keys into a map for theta(1) access
+     * @type {{}}
+     */
+    selectedCurrency.map((selected,index)=>selectedMap[selected.symbol] = index)
     return(
-            <Paper >
+            <Paper elevation={3}>
                 <List data-testid={"CurrencyList"}>
                 {currency.map((currency,index) => {
                         return (
-                            <ListItem button onClick={handleClick(currency)} selected={selectedCurrency.findIndex((curr) => (curr.symbol == currency.symbol)) != -1} key={currency.symbol}>
+                            <ListItem
+                                button
+                                onClick={handleClick(currency, selectedMap[currency.symbol])}
+                                selected={(selectedMap[currency.symbol]!==undefined)}
+                                key={currency.symbol}>
                                 <ListItemIcon>
                                     <CurrencyFlag width={40} currency={currency.symbol}></CurrencyFlag>
                                 </ListItemIcon>
@@ -86,7 +97,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
     return {
         fetchData: (url) => dispatch(currencyFetchData(url)),
-        selectCurrency : (currencySelected) => dispatch(selectCurrency(currencySelected))
+        selectCurrency : (currencySelected,index) => dispatch(selectCurrency(currencySelected,index))
     };
 };
 

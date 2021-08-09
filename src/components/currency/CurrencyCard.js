@@ -75,16 +75,15 @@ const useStyles = makeStyles((theme) => ({
  * @returns {JSX.Element}
  * @constructor
  */
-const CurrencyCard = ({currency,baseCurrency,setBaseCurrency,getRates,selectedCurrency,selectCurrency,}) => {
+const CurrencyCard = ({selectedCurrencyMap, currency,baseCurrency,setBaseCurrency,getRates,selectedCurrency,selectCurrency,}) => {
     const classes = useStyles();
     const theme = useTheme();
     const [value, setValue] = useState( currency.value|" ");
     const [error, setError] = useState(false);
     const isBase = currency.symbol === baseCurrency.symbol;
-
     /**
      * Selects the whole input field
-     * @param e {Event} - Event handler
+     * @param e - Event handler
      */
     const handleClick = (e) => {
         (e.target.localName === "input")&&e.target.select()
@@ -92,20 +91,29 @@ const CurrencyCard = ({currency,baseCurrency,setBaseCurrency,getRates,selectedCu
 
     /**
      * Closes the card by removing the currency from the selected list
-     * @param e {Event} - Event Handler
+     * @param e - Event Handler
      */
-    const handleClose = e => {selectCurrency(currency)};
+    const handleClose = e => {
+        selectCurrency(currency,selectedCurrencyMap[currency.symbol])};
 
     /**
      *  Updates the base currency to this field and gets new rates when a new base is selected, then Validates and adds new value to the input field.
-     * @param e {Event} - Event Handler
+     * @param e - Event Handler
      */
     const handleChange = e => {
+
+        if(baseCurrency.value!==e.target.value)
+        {
+            setBaseCurrency(currency.symbol, e.target.value);
+        }
+
         if (!(currency.symbol === baseCurrency.symbol))
         {
-            getRates(ApiKey,currency,selectedCurrency)
+            setTimeout(()=>{
+                getRates(ApiKey,currency,selectedCurrency)
+            },1000)
         }
-        setBaseCurrency(currency.symbol, e.target.value);
+
         setError(isNaN(e.target.value));
         setValue(e.target.value);
     }
@@ -116,22 +124,20 @@ const CurrencyCard = ({currency,baseCurrency,setBaseCurrency,getRates,selectedCu
      */
     useEffect(() => {
         if(!isBase && baseCurrency != undefined && currency.rate !=undefined){
-
-            setValue((isNaN(baseCurrency.value)?"0":baseCurrency.value * currency.rate))
+            if((baseCurrency.value * currency.rate)!==value && !isNaN(baseCurrency.value)) {
+                setValue((baseCurrency.value * currency.rate))
+            }
         }
-        if(isBase && value!= baseCurrency) {
-            setValue(baseCurrency.value)
-        }
-    },[selectedCurrency, baseCurrency])
+    },[baseCurrency])
 
 
     return(
 
         <Card className={classes.root}
               raised={isBase}
-              style={{
-                  background:(isBase)&&theme.palette.background.default,
-              }}
+              style={(isBase)?{
+                  background:theme.palette.background.default,
+              }:{}}
         >
             <CardHeader
                 avatar={
@@ -185,6 +191,7 @@ CurrencyCard.propTypes = {
     getRates:PropTypes.func.isRequired,
     selectedCurrency:PropTypes.array.isRequired,
     selectCurrency: PropTypes.func.isRequired,
+    selectedCurrencyMap: PropTypes.any.isRequired,
 };
 
 /**
@@ -208,7 +215,7 @@ const mapDispatchToProps = (dispatch) => {
     return {
         getRates : (api,base,selected) => dispatch(getExchangeRatesForSelected(api,base,selected)),
         setBaseCurrency : (symbol, value) => dispatch(setBaseCurrency({symbol,value})),
-        selectCurrency : (currencySelected) => dispatch(selectCurrency(currencySelected)),
+        selectCurrency : (currencySelected, index) => dispatch(selectCurrency(currencySelected, index)),
     };
 };
 

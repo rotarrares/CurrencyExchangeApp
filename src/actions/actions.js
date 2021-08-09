@@ -64,10 +64,10 @@ export const currencyFetchDataSuccess = (currency) => {
  * @returns {{selectedCurrency: {symbol:string, name:string}, type: string}}
  */
 
-export const selectCurrency = (selectedCurrency) => {
+export const selectCurrency = (selectedCurrency, index) => {
     return{
         type: ACTIONS.CURRENCY_SELECTED,
-        selectedCurrency
+        selectedCurrency:{...selectedCurrency,index:index}
     }
 }
 

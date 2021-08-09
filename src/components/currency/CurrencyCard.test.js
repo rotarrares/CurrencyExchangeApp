@@ -7,24 +7,27 @@ import {store} from "../../app/store";
 import {AppThemeProvider} from "../../app/theme";
 
 test('renders without crashing', () => {
+    const selectedCurrencyMap = {"EUR":0}
+    const currency = {symbol:"EUR", name:"EURO DOLLAR"}
+
     const div = document.createElement('div')
     ReactDOM.render(
         <Provider store={store}>
             <AppThemeProvider>
-                <CurrencyCard currency={{symbol:"EUR", name:"EURO DOLLAR"}}/>
+                <CurrencyCard selectedCurrencyMap={selectedCurrencyMap} currency={currency}/>
             </AppThemeProvider>
         </Provider>
         , div)
     ReactDOM.unmountComponentAtNode(div)
-
 });
 
 test('renders card correctly', () => {
     const currency = {symbol:"EUR", name:"ANGULAR DEVELOPMENT IS WORSE"}
+    const selectedCurrencyMap = {"EUR":0}
     const { getByText,getByTestId } = render(
         <Provider store={store}>
             <AppThemeProvider>
-                <CurrencyCard currency={currency}/>
+                <CurrencyCard selectedCurrencyMap={selectedCurrencyMap} currency={currency}/>
             </AppThemeProvider>
         </Provider>
     );

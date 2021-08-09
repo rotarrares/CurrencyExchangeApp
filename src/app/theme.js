@@ -3,20 +3,7 @@ import ThemeProvider from "@material-ui/styles/ThemeProvider";
 import PropTypes from "prop-types";
 import React from "react";
 
-/**
- * Global styles applied on the body
- * @type {(props?: any) => ClassNameMap<"@global">}
- */
-const useGlobalStyles = makeStyles((theme)=>({
-    "@global":{
-        body:{
-            border:0,
-            background:theme.palette.background.paper,
-            margin:0,
-            padding:0,
-        }
-    }
-}))
+
 
 /**
  * Instance of Material-UI Theme
@@ -35,7 +22,6 @@ const theme = createTheme({
  * @constructor
  */
 export const AppThemeProvider = (props) => {
-    useGlobalStyles();
     return <ThemeProvider theme={theme}>{props.children}</ThemeProvider>
 }
 
