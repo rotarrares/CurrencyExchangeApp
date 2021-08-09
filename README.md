@@ -49,6 +49,6 @@ You don’t have to ever use `eject`. The curated feature set is suitable for sm
 
 ####Currency Symbol Map [currency-symbol-map](https://www.npmjs.com/package/currency-symbol-map).
 
-####Prop Types [prop-types](https://www.npmjs.com/package/prop-types)
+####Prop Types [prop-types](https://www.npmjs.com/package/prop-types).
 
-####Redux [react-redux](https://react-redux.js.org/)
+####Redux [react-redux](https://react-redux.js.org/).
