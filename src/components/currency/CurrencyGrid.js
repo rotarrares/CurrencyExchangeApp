@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import {Grid, makeStyles} from '@material-ui/core'
@@ -23,16 +23,27 @@ const useStyles = makeStyles(theme => ({
  * @returns {JSX.Element}
  * @constructor
  */
-const CurrencyGrid = ({selectedCurrency}) => {
+const CurrencyGrid = ({selectedCurrency,modalOpen}) => {
     const classes = useStyles()
+    const [selectedCurrencyProp, setSelectedCurrencyProp] = useState(selectedCurrency)
+
+
+    useEffect(()=>{
+        if(!modalOpen){
+            setSelectedCurrencyProp(selectedCurrency)
+        }
+    },[selectedCurrency])
+
+
 
     return (
         <Grid data-testid={"CurrencyGrid"} className={classes.currencyListFix} spacing={3} container>
-        {selectedCurrency.map((currency) => (
-            <Grid xs={12} sm={6} md={4} xl={3} item key={currency.symbol}>
-                <CurrencyCard  currency={currency}/>
-            </Grid>
-        ))}
+
+         {selectedCurrencyProp.map((currency) =>(
+                <Grid xs={12} sm={6} md={4} xl={3} item key={currency.symbol}>
+                    <CurrencyCard currency={currency}/>
+                </Grid>)
+             )}
         </Grid>
     )
 }
@@ -43,6 +54,7 @@ const CurrencyGrid = ({selectedCurrency}) => {
  */
 CurrencyGrid.propTypes = {
     selectedCurrency: PropTypes.array.isRequired,
+    modalOpen: PropTypes.bool.isRequired,
 };
 
 /**

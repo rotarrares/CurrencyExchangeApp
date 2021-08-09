@@ -84,7 +84,7 @@ const CurrencyCard = ({currency,baseCurrency,setBaseCurrency,getRates,selectedCu
 
     /**
      * Selects the whole input field
-     * @param e {Event} - Event handler
+     * @param e - Event handler
      */
     const handleClick = (e) => {
         (e.target.localName === "input")&&e.target.select()
@@ -92,20 +92,28 @@ const CurrencyCard = ({currency,baseCurrency,setBaseCurrency,getRates,selectedCu
 
     /**
      * Closes the card by removing the currency from the selected list
-     * @param e {Event} - Event Handler
+     * @param e - Event Handler
      */
     const handleClose = e => {selectCurrency(currency)};
 
     /**
      *  Updates the base currency to this field and gets new rates when a new base is selected, then Validates and adds new value to the input field.
-     * @param e {Event} - Event Handler
+     * @param e - Event Handler
      */
     const handleChange = e => {
+
+        if(baseCurrency.value!==e.target.value)
+        {
+            setBaseCurrency(currency.symbol, e.target.value);
+        }
+
         if (!(currency.symbol === baseCurrency.symbol))
         {
-            getRates(ApiKey,currency,selectedCurrency)
+            setTimeout(()=>{
+                getRates(ApiKey,currency,selectedCurrency)
+            },1000)
         }
-        setBaseCurrency(currency.symbol, e.target.value);
+
         setError(isNaN(e.target.value));
         setValue(e.target.value);
     }
@@ -116,13 +124,14 @@ const CurrencyCard = ({currency,baseCurrency,setBaseCurrency,getRates,selectedCu
      */
     useEffect(() => {
         if(!isBase && baseCurrency != undefined && currency.rate !=undefined){
-
-            setValue((isNaN(baseCurrency.value)?"0":baseCurrency.value * currency.rate))
+            if((baseCurrency.value * currency.rate)!==value && !isNaN(baseCurrency.value)) {
+                setValue((baseCurrency.value * currency.rate))
+            }
         }
-        if(isBase && value!= baseCurrency) {
+        /*if(isBase && value!= baseCurrency.value) {
             setValue(baseCurrency.value)
-        }
-    },[selectedCurrency, baseCurrency])
+        }*/
+    },[baseCurrency])
 
 
     return(

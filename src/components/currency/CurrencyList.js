@@ -35,12 +35,19 @@ const CurrencyList = ({selectCurrency,currency,fetchData,selectedCurrency}) => {
         if(currency.length === 0) fetchData('/symbols' + ApiKey );
     },[])
 
+
+    let selectedMap = {}
+    /**
+     * Organizing the selected keys into a map for easier access
+     * @type {{}}
+     */
+    selectedCurrency.map((selected)=>selectedMap[selected.symbol] = true)
     return(
             <Paper >
                 <List data-testid={"CurrencyList"}>
                 {currency.map((currency,index) => {
                         return (
-                            <ListItem button onClick={handleClick(currency)} selected={selectedCurrency.findIndex((curr) => (curr.symbol == currency.symbol)) != -1} key={currency.symbol}>
+                            <ListItem button onClick={handleClick(currency)} selected={(selectedMap[currency.symbol])} key={currency.symbol}>
                                 <ListItemIcon>
                                     <CurrencyFlag width={40} currency={currency.symbol}></CurrencyFlag>
                                 </ListItemIcon>
