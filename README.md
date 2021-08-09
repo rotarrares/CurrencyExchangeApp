@@ -1,5 +1,9 @@
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app), using the [Redux](https://redux.js.org/) and [Redux Toolkit](https://redux-toolkit.js.org/) template.
 
+# First and foremost
+#### if you don't have yarn already, use `npm install yarn -g` to aquire yarn
+#### use `yarn install` to install all dependencies
+
 ## Available Scripts
 
 In the project directory, you can run:
@@ -37,8 +41,14 @@ Instead, it will copy all the configuration files and the transitive dependencie
 
 You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
 
-## Learn More
+## Dependencies
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+####Create React App [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+####Material UI [Material-UI](https://material-ui.com/getting-started/installation/).
+
+####Currency Symbol Map [currency-symbol-map](https://www.npmjs.com/package/currency-symbol-map).
+
+####Prop Types [prop-types](https://www.npmjs.com/package/prop-types).
+
+####Redux [react-redux](https://react-redux.js.org/).
